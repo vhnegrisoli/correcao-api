@@ -73,7 +73,7 @@ public class CorrecaoService {
             throw new ValidacaoException("Não é possível salvar esta correção "
                 + "pois já foi registrada uma correção para esta data.");
         }
-        if (repository.existsByDataCorrecaoAndIdNot(request.getDataCorrecao(), id)) {
+        if (!isEmpty(id) && repository.existsByDataCorrecaoAndIdNot(request.getDataCorrecao(), id)) {
             throw new ValidacaoException("Não é possível editar esta correção "
                 + "pois já foi registrada uma correção para esta data.");
         }
