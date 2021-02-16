@@ -2,7 +2,7 @@ app-config:
   nome: Correção API
   descricao: Projeto back-end para cálculo de correções de texto.
   versao: 1.0.0
-  url: https://correcao-api.herokuapp.com/
+  url: http://localhost:8080/
 
 spring:
   main:

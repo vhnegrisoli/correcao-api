@@ -1,3 +1,9 @@
+app-config:
+  nome: Correção API
+  descricao: Projeto back-end para cálculo de correções de texto.
+  versao: 1.0.0
+  url: https://correcao-api.herokuapp.com/
+
 spring:
   main:
     allow-bean-definition-overriding: true
