@@ -1,6 +1,7 @@
 package br.com.valorescorrecoesapi.modules.correcoes.service;
 
 import br.com.valorescorrecoesapi.config.exception.ValidacaoException;
+import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoDetalheResponse;
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoRequest;
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoResponse;
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoTotaisResponse;
@@ -87,12 +88,18 @@ public class CorrecaoService {
             .collect(Collectors.toList());
     }
 
-    public List<CorrecaoResponse> buscarCorrecoesPorData(String dataCorrecao) {
-        return repository
+    public CorrecaoDetalheResponse buscarCorrecaoPorId(Integer id) {
+        return CorrecaoDetalheResponse.gerar(repository
+            .findById(id)
+            .orElseThrow(() -> new ValidacaoException("Não foi encontrada nenhuma correção para esta data."))
+        );
+    }
+
+    public CorrecaoDetalheResponse buscarCorrecaoPorData(String dataCorrecao) {
+        return CorrecaoDetalheResponse.gerar(repository
             .findByDataCorrecao(converterStringDataEmLocalDate(dataCorrecao))
-            .stream()
-            .map(CorrecaoResponse::gerar)
-            .collect(Collectors.toList());
+            .orElseThrow(() -> new ValidacaoException("Não foi encontrada nenhuma correção para esta data."))
+        );
     }
 
     private LocalDate converterStringDataEmLocalDate(String data) {
@@ -104,7 +111,8 @@ public class CorrecaoService {
         }
     }
 
-    public CorrecaoTotaisResponse buscarTotaisDoAnoAtual() {
-        return CorrecaoTotaisResponse.gerar(repository.findByAno(LocalDate.now().getYear()));
+    public CorrecaoTotaisResponse buscarTotaisDoAnoAtual(Integer ano) {
+        return CorrecaoTotaisResponse.gerar(repository
+            .findByAno(isEmpty(ano) ? LocalDate.now().getYear() : ano));
     }
 }

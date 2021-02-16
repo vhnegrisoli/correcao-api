@@ -1,5 +1,6 @@
 package br.com.valorescorrecoesapi.modules.correcoes.controller;
 
+import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoDetalheResponse;
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoRequest;
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoResponse;
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoTotaisResponse;
@@ -37,13 +38,18 @@ public class CorrecaoController {
         return service.buscarCorrecoesPorAno(ano);
     }
 
-    @GetMapping("buscar/data/{dataCorrecao}")
-    public List<CorrecaoResponse> buscarCorrecoesPorData(@PathVariable String dataCorrecao) {
-        return service.buscarCorrecoesPorData(dataCorrecao);
+    @GetMapping("{id}")
+    public CorrecaoDetalheResponse buscarCorrecaoPorId(@PathVariable Integer id) {
+        return service.buscarCorrecaoPorId(id);
+    }
+
+    @GetMapping("data/{dataCorrecao}")
+    public CorrecaoDetalheResponse buscarCorrecaoPorData(@PathVariable String dataCorrecao) {
+        return service.buscarCorrecaoPorData(dataCorrecao);
     }
 
     @GetMapping("totais")
-    public CorrecaoTotaisResponse buscarTotaisDoAnoAtual() {
-        return service.buscarTotaisDoAnoAtual();
+    public CorrecaoTotaisResponse buscarTotaisDoAnoAtual(@RequestParam(required = false) Integer ano) {
+        return service.buscarTotaisDoAnoAtual(ano);
     }
 }

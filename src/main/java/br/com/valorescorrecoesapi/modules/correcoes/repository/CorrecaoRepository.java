@@ -5,12 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface CorrecaoRepository extends JpaRepository<Correcao, Integer> {
 
     List<Correcao> findByAno(Integer ano);
 
-    List<Correcao> findByDataCorrecao(LocalDate dataCorrecao);
+    Optional<Correcao> findByDataCorrecao(LocalDate dataCorrecao);
 
     Boolean existsByDataCorrecao(LocalDate dataCorrecao);
 
