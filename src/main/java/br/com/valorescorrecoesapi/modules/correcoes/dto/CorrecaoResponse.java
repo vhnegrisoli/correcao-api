@@ -26,6 +26,7 @@ public class CorrecaoResponse {
     private ETipoCorrecao tipoCorrecao;
     private String tipoCorrecaoNome;
     private BigDecimal valorTotal;
+    private Integer totalCorrigido;
 
     public static CorrecaoResponse gerar(Correcao correcao) {
         return CorrecaoResponse
@@ -38,6 +39,7 @@ public class CorrecaoResponse {
                 correcao.getTotalCorrigido() * correcao.getTipoCorrecao().getValorCorrecao().doubleValue()
                 )
             )
+            .totalCorrigido(correcao.getTotalCorrigido())
             .build();
     }
 }
