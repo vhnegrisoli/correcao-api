@@ -4,7 +4,6 @@ import br.com.valorescorrecoesapi.config.exception.ValidacaoException;
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoRequest;
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoResponse;
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoTotaisResponse;
-import br.com.valorescorrecoesapi.modules.correcoes.enums.ETipoCorrecao;
 import br.com.valorescorrecoesapi.modules.correcoes.model.Correcao;
 import br.com.valorescorrecoesapi.modules.correcoes.repository.CorrecaoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -13,13 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static br.com.valorescorrecoesapi.config.exception.Constantes.FORMATO_LOCAL_DATE;
-import static br.com.valorescorrecoesapi.config.exception.Constantes.TOTAL_CORRECOES_POR_DIA;
+import static br.com.valorescorrecoesapi.config.Constantes.FORMATO_LOCAL_DATE;
+import static br.com.valorescorrecoesapi.config.Constantes.TOTAL_CORRECOES_POR_DIA;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -31,24 +28,30 @@ public class CorrecaoService {
 
     @Transactional
     public CorrecaoResponse salvarCorrecao(CorrecaoRequest request) {
-        validarDadosCorrecao(request);
+        validarDadosCorrecao(request, null);
         var correcao = Correcao.gerarCorrecao(request);
         repository.save(correcao);
         return CorrecaoResponse.gerar(correcao);
     }
 
-    private void validarDadosCorrecao(CorrecaoRequest request) {
-        validarCorrecaoComTipo(request);
-        validarCorrecaoComData(request);
-        validarCorrecaoComTotalCorrigido(request);
-        validarTotalMaiorQue100(request);
+    @Transactional
+    public CorrecaoResponse editarCorrecao(Integer id, CorrecaoRequest request) {
+        validarDadosCorrecao(request, id);
+        var correcao = Correcao.gerarCorrecao(request);
+        correcao.setId(id);
+        repository.save(correcao);
+        return CorrecaoResponse.gerar(correcao);
     }
 
-    private void validarCorrecaoComTipo(CorrecaoRequest request) {
-        if (isEmpty(request.getTipoCorrecao())) {
-            throw new ValidacaoException("É necessário informar o tipo da correção. Opções: "
-                .concat(Arrays.toString(ETipoCorrecao.values())));
-        }
+    @Transactional
+    public void removerCorrecao(Integer id) {
+        repository.deleteById(id);
+    }
+
+    private void validarDadosCorrecao(CorrecaoRequest request, Integer id) {
+        validarCorrecaoComData(request);
+        validarTotalMaiorQue100(request);
+        validarDataJaExistente(request, id);
     }
 
     private void validarCorrecaoComData(CorrecaoRequest request) {
@@ -58,24 +61,27 @@ public class CorrecaoService {
         }
     }
 
-    private void validarCorrecaoComTotalCorrigido(CorrecaoRequest request) {
-        if (isEmpty(request.getTotalCorrigido())) {
-            throw new ValidacaoException("É necessário informar o total corrigido.");
-        }
-    }
-
     private void validarTotalMaiorQue100(CorrecaoRequest request) {
-        if (request.getTotalCorrigido() > TOTAL_CORRECOES_POR_DIA) {
+        var total = request.getQtdNormal() + request.getQtdTerceiraCorrecao() + request.getQtdAvaliacaoDesempenho();
+        if (total > TOTAL_CORRECOES_POR_DIA) {
             throw new ValidacaoException("O total de correções por dia é 100.");
         }
     }
 
-    public List<CorrecaoResponse> buscarCorrecoesPorAno(Integer ano) {
-        if (isEmpty(ano)) {
-            return Collections.emptyList();
+    private void validarDataJaExistente(CorrecaoRequest request, Integer id) {
+        if (isEmpty(id) && repository.existsByDataCorrecao(request.getDataCorrecao())) {
+            throw new ValidacaoException("Não é possível salvar esta correção "
+                + "pois já foi registrada uma correção para esta data.");
         }
+        if (repository.existsByDataCorrecaoAndIdNot(request.getDataCorrecao(), id)) {
+            throw new ValidacaoException("Não é possível editar esta correção "
+                + "pois já foi registrada uma correção para esta data.");
+        }
+    }
+
+    public List<CorrecaoResponse> buscarCorrecoesPorAno(Integer ano) {
         return repository
-            .findByAno(ano)
+            .findByAno(isEmpty(ano) ? LocalDate.now().getYear() : ano)
             .stream()
             .map(CorrecaoResponse::gerar)
             .collect(Collectors.toList());

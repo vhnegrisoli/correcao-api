@@ -1,14 +1,12 @@
 package br.com.valorescorrecoesapi.modules.correcoes.model;
 
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoRequest;
-import br.com.valorescorrecoesapi.modules.correcoes.enums.ETipoCorrecao;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -39,15 +37,14 @@ public class Correcao {
     @Column(name = "DATA_CADASTRO", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
-    @Column(name = "TIPO_CORRECAO", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ETipoCorrecao tipoCorrecao;
+    @Column(name = "QTD_NORMAL", nullable = false)
+    private Integer qtdNormal;
 
-    @Column(name = "VALOR_CORRECAO", nullable = false)
-    private BigDecimal valorCorrecao;
+    @Column(name = "QTD_TERCEIRA_CORRECAO", nullable = false)
+    private Integer qtdTerceiraCorrecao;
 
-    @Column(name = "TOTAL_CORRIGIDO", nullable = false, length = 3)
-    private Integer totalCorrigido;
+    @Column(name = "QTD_AVALIACAO_DESEMPENHO", nullable = false)
+    private Integer qtdAvaliacaoDesempenho;
 
     @PrePersist
     public void prePersist() {
@@ -61,9 +58,9 @@ public class Correcao {
             .mes(request.getDataCorrecao().getMonthValue())
             .dia(request.getDataCorrecao().getDayOfMonth())
             .dataCorrecao(request.getDataCorrecao())
-            .tipoCorrecao(request.getTipoCorrecao())
-            .valorCorrecao(request.getTipoCorrecao().getValorCorrecao())
-            .totalCorrigido(request.getTotalCorrigido())
+            .qtdNormal(request.getQtdNormal())
+            .qtdTerceiraCorrecao(request.getQtdTerceiraCorrecao())
+            .qtdAvaliacaoDesempenho(request.getQtdAvaliacaoDesempenho())
             .build();
     }
 }

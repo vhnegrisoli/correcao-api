@@ -1,4 +1,4 @@
-package br.com.valorescorrecoesapi.config.exception;
+package br.com.valorescorrecoesapi.config;
 
 public interface Constantes {
 

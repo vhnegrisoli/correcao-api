@@ -1,11 +1,12 @@
 package br.com.valorescorrecoesapi.modules.correcoes.dto;
 
-import br.com.valorescorrecoesapi.modules.correcoes.enums.ETipoCorrecao;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+
+import static br.com.valorescorrecoesapi.config.Constantes.ZERO;
 
 @Data
 @NoArgsConstructor
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 public class CorrecaoRequest {
 
     private LocalDate dataCorrecao;
-    private ETipoCorrecao tipoCorrecao;
-    private Integer totalCorrigido;
+    private Integer qtdNormal = ZERO;
+    private Integer qtdTerceiraCorrecao = ZERO;
+    private Integer qtdAvaliacaoDesempenho = ZERO;
 }

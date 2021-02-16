@@ -16,13 +16,24 @@ public class CorrecaoController {
     @Autowired
     private CorrecaoService service;
 
-    @PostMapping("salvar")
+    @PostMapping
     public CorrecaoResponse salvarCorrecao(@RequestBody CorrecaoRequest request) {
         return service.salvarCorrecao(request);
     }
 
-    @GetMapping("buscar/ano/{ano}")
-    public List<CorrecaoResponse> buscarCorrecoesPorAno(@PathVariable Integer ano) {
+    @PutMapping("{id}")
+    public CorrecaoResponse editarCorrecao(@PathVariable Integer id,
+                                           @RequestBody CorrecaoRequest request) {
+        return service.editarCorrecao(id, request);
+    }
+
+    @DeleteMapping("{id}")
+    public void removerCorrecao(@PathVariable Integer id) {
+        service.removerCorrecao(id);
+    }
+
+    @GetMapping
+    public List<CorrecaoResponse> buscarCorrecoes(@RequestParam(required = false) Integer ano) {
         return service.buscarCorrecoesPorAno(ano);
     }
 
@@ -31,7 +42,7 @@ public class CorrecaoController {
         return service.buscarCorrecoesPorData(dataCorrecao);
     }
 
-    @GetMapping("ano-atual/totais")
+    @GetMapping("totais")
     public CorrecaoTotaisResponse buscarTotaisDoAnoAtual() {
         return service.buscarTotaisDoAnoAtual();
     }

@@ -11,4 +11,8 @@ public interface CorrecaoRepository extends JpaRepository<Correcao, Integer> {
     List<Correcao> findByAno(Integer ano);
 
     List<Correcao> findByDataCorrecao(LocalDate dataCorrecao);
+
+    Boolean existsByDataCorrecao(LocalDate dataCorrecao);
+
+    Boolean existsByDataCorrecaoAndIdNot(LocalDate dataCorrecao, Integer id);
 }
