@@ -40,6 +40,7 @@ public class Correcao {
     private LocalDateTime dataCadastro;
 
     @Column(name = "TIPO_CORRECAO", nullable = false)
+    @Enumerated(EnumType.STRING)
     private ETipoCorrecao tipoCorrecao;
 
     @Column(name = "VALOR_CORRECAO", nullable = false)
