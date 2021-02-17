@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,6 +86,7 @@ public class CorrecaoService {
             .findByAno(isEmpty(ano) ? LocalDate.now().getYear() : ano)
             .stream()
             .map(CorrecaoResponse::gerar)
+            .sorted(Comparator.comparing(CorrecaoResponse::getDataCorrecao))
             .collect(Collectors.toList());
     }
 
