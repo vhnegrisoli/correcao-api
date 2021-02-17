@@ -20,24 +20,36 @@
     <div class="container">
       <br />
       <div class="row">
-        <div class="card" style="width: 18rem">
-          <div class="card-body">
-            <h5 class="card-title" id="totalCorrecoes"></h5>
-            <p class="card-text">Total corrigido até o momento</p>
+        <div class="col m3">
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <h5 class="card-title" id="totalCorrecoes"></h5>
+              <p class="card-text">Total corrigido até o momento</p>
+            </div>
           </div>
         </div>
-        <div class="card" style="width: 18rem">
-          <div class="card-body">
-            <h5 class="card-title" id="valorTotalRecebido"></h5>
-            <p class="card-text">Total recebido até o momento.</p>
+
+        <div class="col m3">
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <h5 class="card-title" id="valorTotalRecebido"></h5>
+              <p class="card-text">Total recebido até o momento.</p>
+            </div>
           </div>
         </div>
-        <div class="card" style="width: 18rem">
-          <div class="card-body">
-            <h5 class="card-title" id="totalDiasCorridos"></h5>
-            <p class="card-text">Dias corridos.</p>
+
+        <div class="col m3">
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <h5 class="card-title" id="totalDiasCorridos"></h5>
+              <p class="card-text">Dias corridos.</p>
+            </div>
           </div>
         </div>
+      </div>
+      <br />
+      <div class="col m3">
+        <button type="button" class="btn btn-primary">Nova correção</button>
       </div>
       <br />
       <table class="table" id="tabelaCorrecoes"></table>
@@ -75,10 +87,11 @@
       var dadosTabela = `
         <thead>
           <tr>
-            <th scope="col">ID</th>
             <th scope="col">Data</th>
             <th scope="col">Total corrigido</th>
             <th scope="col">Valor total</th>
+            <th scope="col">Editar</th>
+            <th scope="col">Remover</th>
           </tr>
         </thead>
         <tbody>
@@ -90,10 +103,14 @@
             dadosTabela =
               dadosTabela +
               `<tr>
-            <th scope="row">${correcao.id}</th>
             <td>${correcao.dataCorrecao}</td>
             <td>${correcao.totalCorrigido}</td>
-            <td>${correcao.valorTotal}</td>
+            <td>${formatarMoeda(correcao.valorTotal)}</td>
+            <td><button type="button" class="btn btn-warning">Editar</button></td>
+            <td>
+            <button type="button" class="btn btn-danger" onclick="removerCorrecao(${
+              correcao.id
+            })">Remover</button></td>
           </tr>`;
           });
           dadosTabela = dadosTabela + "</tbody>";
@@ -106,16 +123,30 @@
 
     function formatarMoeda(moeda) {
       valorStr = moeda.toString().replace(".", ",");
-      valorStr = "R$" + valorStr;
       console.log(valorStr);
       try {
-        if (valorStr.split(",")[1].length === 1) {
+        let array = valorStr.split(",");
+        if (array[1].length === 1) {
           valorStr = valorStr + "0";
         }
       } catch (error) {
+        valorStr = valorStr + ",00";
         console.error(error);
       }
+      valorStr = "R$" + valorStr;
       return valorStr;
-    } 
+    }
+
+    async function removerCorrecao(id) {
+      await axios
+        .delete(`${backEnd}/api/correcoes/${id}`)
+        .then((data) => {
+          location.reload();
+        })
+        .catch((error) => {
+          document.getElementById("error").innerHTML =
+            error.response.data.message;
+        });
+    }
   </script>
 </html>
