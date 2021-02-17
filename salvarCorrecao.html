@@ -116,7 +116,7 @@
       await axios
         .post(`${backEnd}/api/correcoes`, object)
         .then((data) => {
-          window.location.href = "/index.html";
+          window.location.href = "/correcao-api";
         })
         .catch((error) => {
           if (error.response.status >= 500) {
