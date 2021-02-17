@@ -72,18 +72,33 @@
                 </div>
               </div>
               <br />
-              <button
-                class="btn btn-success"
-                onclick="salvarCorrecao()"
-                id="saveButton"
-                role="button"
-                type="submit"
+              <div
+                class="spinner-border text-primary"
+                role="status"
+                id="loadingSave"
               >
-                Salvar correção
-              </button>
-              <a class="btn btn-primary" href="index.html" role="button"
-                >Voltar</a
-              >
+                <span class="sr-only"></span>
+              </div>
+              <div class="row">
+                <div class="col-md-11">
+                  <button
+                    class="btn btn-success"
+                    onclick="salvarCorrecao()"
+                    id="saveButton"
+                    role="button"
+                    type="submit"
+                  >
+                    Salvar correção
+                  </button>
+                </div>
+                <div class="col-md-1">
+                  <a class="btn btn-primary" href="index.html" role="button"
+                    >Voltar</a
+                  >
+                </div>
+              </div>
+
+              <br />
             </form>
           </div>
         </div>
@@ -103,7 +118,12 @@
 
     document.getElementById("error").innerHTML = "";
 
+    document.getElementById("loadingSave").style.display = "none";
+    document.getElementById("saveButton").style.display = "block";
+
     async function salvarCorrecao() {
+      document.getElementById("loadingSave").style.display = "block";
+      document.getElementById("saveButton").style.display = "none";
       var object = {};
       var formData = new FormData(document.querySelector("form"));
       new FormData(document.querySelector("form")).forEach(function (
@@ -127,6 +147,8 @@
               error.response.data.message;
           }
         });
+      document.getElementById("loadingSave").style.display = "none";
+      document.getElementById("saveButton").style.display = "block";
     }
   </script>
 </html>

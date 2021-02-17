@@ -23,7 +23,15 @@
         <div class="col m3">
           <div class="card" style="width: 18rem">
             <div class="card-body">
+              <div
+                class="spinner-border text-primary"
+                role="status"
+                id="loadingCard1"
+              >
+                <span class="sr-only"></span>
+              </div>
               <h5 class="card-title" id="totalCorrecoes"></h5>
+
               <p class="card-text">Total corrigido até o momento</p>
             </div>
           </div>
@@ -32,6 +40,13 @@
         <div class="col m3">
           <div class="card" style="width: 18rem">
             <div class="card-body">
+              <div
+                class="spinner-border text-primary"
+                role="status"
+                id="loadingCard2"
+              >
+                <span class="sr-only"></span>
+              </div>
               <h5 class="card-title" id="valorTotalRecebido"></h5>
               <p class="card-text">Total recebido até o momento.</p>
             </div>
@@ -41,6 +56,13 @@
         <div class="col m3">
           <div class="card" style="width: 18rem">
             <div class="card-body">
+              <div
+                class="spinner-border text-primary"
+                role="status"
+                id="loadingCard3"
+              >
+                <span class="sr-only"></span>
+              </div>
               <h5 class="card-title" id="totalDiasCorridos"></h5>
               <p class="card-text">Dias corridos.</p>
             </div>
@@ -54,12 +76,20 @@
         >
       </div>
       <br />
+      <div class="spinner-border text-primary" role="status" id="loadingTabela">
+        <span class="sr-only"></span>
+      </div>
       <table class="table" id="tabelaCorrecoes"></table>
     </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
     const backEnd = "https://correcao-api.herokuapp.com";
+
+    document.getElementById("loadingTabela").style.display = "block";
+    document.getElementById("loadingCard1").style.display = "block";
+    document.getElementById("loadingCard2").style.display = "block";
+    document.getElementById("loadingCard3").style.display = "block";
 
     buscarTotaisCards();
     buscarCorrecoes();
@@ -68,6 +98,9 @@
       await axios
         .get(`${backEnd}/api/correcoes/totais`)
         .then((data) => {
+          document.getElementById("loadingCard1").style.display = "none";
+          document.getElementById("loadingCard2").style.display = "none";
+          document.getElementById("loadingCard3").style.display = "none";
           var totais = data.data;
           document.getElementById("totalCorrecoes").innerHTML =
             totais.totalCorrecoes;
@@ -100,6 +133,7 @@
       await axios
         .get(`${backEnd}/api/correcoes`)
         .then((data) => {
+          document.getElementById("loadingTabela").style.display = "none";
           data.data.forEach((correcao) => {
             dadosTabela =
               dadosTabela +
@@ -138,17 +172,19 @@
     }
 
     async function removerCorrecao(id) {
-      
-        await axios
-          .delete(`${backEnd}/api/correcoes/${id}`)
-          .then((data) => {
-            location.reload();
-          })
-          .catch((error) => {
-            document.getElementById("error").innerHTML =
-              error.response.data.message;
-          });
-        
+      document.getElementById("loadingTabela").style.display = "none";
+      document.getElementById("loadingCard1").style.display = "none";
+      document.getElementById("loadingCard2").style.display = "none";
+      document.getElementById("loadingCard3").style.display = "none";
+      await axios
+        .delete(`${backEnd}/api/correcoes/${id}`)
+        .then((data) => {
+          location.reload();
+        })
+        .catch((error) => {
+          document.getElementById("error").innerHTML =
+            error.response.data.message;
+        });
     }
   </script>
 </html>
