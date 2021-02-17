@@ -19,11 +19,114 @@
 
   <body>
     <div class="container">
-      
+      <br />
+      <div class="row">
+        <div class="card" style="width: 100rem">
+          <div class="card-body">
+            <form>
+              <div class="row">
+                <div class="form-group">
+                  <label for="dataCorrecao">Data da correção</label>
+                  <input
+                    type="date"
+                    class="form-control"
+                    id="dataCorrecao"
+                    name="dataCorrecao"
+                  />
+                </div>
+              </div>
+              <br />
+              <div class="row">
+                <div class="form-group">
+                  <label for="normais">Correções normais</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="qtdNormal"
+                    name="qtdNormal"
+                  />
+                </div>
+              </div>
+              <br />
+              <div class="row">
+                <div class="form-group">
+                  <label for="terceiras">Terceiras correções</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="qtdTerceiraCorrecao"
+                    name="qtdTerceiraCorrecao"
+                  />
+                </div>
+              </div>
+              <br />
+              <div class="row">
+                <div class="form-group">
+                  <label for="avaliacoes">Avaliações de desempenho</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="qtdAvaliacaoDesempenho"
+                    name="qtdAvaliacaoDesempenho"
+                  />
+                </div>
+              </div>
+              <br />
+              <button
+                class="btn btn-success"
+                onclick="salvarCorrecao()"
+                id="saveButton"
+                role="button"
+                type="submit"
+              >
+                Salvar correção
+              </button>
+              <a class="btn btn-primary" href="index.html" role="button"
+                >Voltar</a
+              >
+            </form>
+          </div>
+        </div>
+        <h6 style="color: red" id="error"></h6>
+      </div>
     </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
     const backEnd = "https://correcao-api.herokuapp.com";
+
+    document
+      .getElementById("saveButton")
+      .addEventListener("click", function (event) {
+        event.preventDefault();
+      });
+
+    document.getElementById("error").innerHTML = "";
+
+    async function salvarCorrecao() {
+      var object = {};
+      var formData = new FormData(document.querySelector("form"));
+      new FormData(document.querySelector("form")).forEach(function (
+        value,
+        key
+      ) {
+        object[key] = value;
+      });
+      console.info(object);
+      await axios
+        .post(`${backEnd}/api/correcoes`, object)
+        .then((data) => {
+          window.location.href = "/index.html";
+        })
+        .catch((error) => {
+          if (error.response.status >= 500) {
+            document.getElementById("error").innerHTML =
+              "Dados enviados em formato inválido. Tente novamente.";
+          } else {
+            document.getElementById("error").innerHTML =
+              error.response.data.message;
+          }
+        });
+    }
   </script>
 </html>

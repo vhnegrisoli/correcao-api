@@ -49,7 +49,9 @@
       </div>
       <br />
       <div class="col m3">
-        <button type="button" class="btn btn-primary">Nova correção</button>
+        <a class="btn btn-primary" href="salvarCorrecao.html" role="button"
+          >Nova correção</a
+        >
       </div>
       <br />
       <table class="table" id="tabelaCorrecoes"></table>
@@ -90,7 +92,6 @@
             <th scope="col">Data</th>
             <th scope="col">Total corrigido</th>
             <th scope="col">Valor total</th>
-            <th scope="col">Editar</th>
             <th scope="col">Remover</th>
           </tr>
         </thead>
@@ -106,7 +107,6 @@
             <td>${correcao.dataCorrecao}</td>
             <td>${correcao.totalCorrigido}</td>
             <td>${formatarMoeda(correcao.valorTotal)}</td>
-            <td><button type="button" class="btn btn-warning">Editar</button></td>
             <td>
             <button type="button" class="btn btn-danger" onclick="removerCorrecao(${
               correcao.id
@@ -138,15 +138,17 @@
     }
 
     async function removerCorrecao(id) {
-      await axios
-        .delete(`${backEnd}/api/correcoes/${id}`)
-        .then((data) => {
-          location.reload();
-        })
-        .catch((error) => {
-          document.getElementById("error").innerHTML =
-            error.response.data.message;
-        });
+      
+        await axios
+          .delete(`${backEnd}/api/correcoes/${id}`)
+          .then((data) => {
+            location.reload();
+          })
+          .catch((error) => {
+            document.getElementById("error").innerHTML =
+              error.response.data.message;
+          });
+        
     }
   </script>
 </html>
