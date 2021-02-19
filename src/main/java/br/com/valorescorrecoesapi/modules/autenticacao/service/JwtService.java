@@ -11,7 +11,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,10 +29,10 @@ public class JwtService {
 
     @Autowired
     private PasswordEncoder encoder;
+
     @Autowired
     private ApiUser apiUser;
-    @Autowired
-    private Environment env;
+
     @Value("${authorization.jwt-secret}")
     private String secret;
 
