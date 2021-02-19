@@ -18,38 +18,52 @@ public class CorrecaoController {
     private CorrecaoService service;
 
     @PostMapping
-    public CorrecaoResponse salvarCorrecao(@RequestBody CorrecaoRequest request) {
+    public CorrecaoResponse salvarCorrecao(@RequestHeader(value="api-secret") String apiSecret,
+                                           @RequestHeader(value="authorization") String authorization,
+                                           @RequestBody CorrecaoRequest request) {
         return service.salvarCorrecao(request);
     }
 
     @PutMapping("{id}")
-    public CorrecaoResponse editarCorrecao(@PathVariable Integer id,
+    public CorrecaoResponse editarCorrecao(@RequestHeader(value="api-secret") String apiSecret,
+                                           @RequestHeader(value="authorization") String authorization,
+                                           @PathVariable Integer id,
                                            @RequestBody CorrecaoRequest request) {
         return service.editarCorrecao(id, request);
     }
 
     @DeleteMapping("{id}")
-    public void removerCorrecao(@PathVariable Integer id) {
+    public void removerCorrecao(@RequestHeader(value="api-secret") String apiSecret,
+                                @RequestHeader(value="authorization") String authorization,
+                                @PathVariable Integer id) {
         service.removerCorrecao(id);
     }
 
     @GetMapping
-    public List<CorrecaoResponse> buscarCorrecoes(@RequestParam(required = false) Integer ano) {
+    public List<CorrecaoResponse> buscarCorrecoes(@RequestHeader(value="api-secret") String apiSecret,
+                                                  @RequestHeader(value="authorization") String authorization,
+                                                  @RequestParam(required = false) Integer ano) {
         return service.buscarCorrecoesPorAno(ano);
     }
 
     @GetMapping("{id}")
-    public CorrecaoDetalheResponse buscarCorrecaoPorId(@PathVariable Integer id) {
+    public CorrecaoDetalheResponse buscarCorrecaoPorId(@RequestHeader(value="api-secret") String apiSecret,
+                                                       @RequestHeader(value="authorization") String authorization,
+                                                       @PathVariable Integer id) {
         return service.buscarCorrecaoPorId(id);
     }
 
     @GetMapping("data/{dataCorrecao}")
-    public CorrecaoDetalheResponse buscarCorrecaoPorData(@PathVariable String dataCorrecao) {
+    public CorrecaoDetalheResponse buscarCorrecaoPorData(@RequestHeader(value="api-secret") String apiSecret,
+                                                         @RequestHeader(value="authorization") String authorization,
+                                                         @PathVariable String dataCorrecao) {
         return service.buscarCorrecaoPorData(dataCorrecao);
     }
 
     @GetMapping("totais")
-    public CorrecaoTotaisResponse buscarTotaisDoAnoAtual(@RequestParam(required = false) Integer ano) {
+    public CorrecaoTotaisResponse buscarTotaisDoAnoAtual(@RequestHeader(value="api-secret") String apiSecret,
+                                                         @RequestHeader(value="authorization") String authorization,
+                                                         @RequestParam(required = false) Integer ano) {
         return service.buscarTotaisDoAnoAtual(ano);
     }
 }

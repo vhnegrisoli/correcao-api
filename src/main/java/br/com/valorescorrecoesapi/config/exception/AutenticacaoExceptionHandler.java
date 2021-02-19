@@ -1,0 +1,18 @@
+package br.com.valorescorrecoesapi.config.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+
+@ControllerAdvice
+public class AutenticacaoExceptionHandler {
+
+    @ExceptionHandler(AutenticacaoException.class)
+    public ResponseEntity<?> handleResouseNotAuthenticatedException(AutenticacaoException autenticacaoException) {
+        ExceptionDetails resourceNotFoundDetails = new ExceptionDetails();
+        resourceNotFoundDetails.setStatus(HttpStatus.UNAUTHORIZED.value());
+        resourceNotFoundDetails.setMessage(autenticacaoException.getMessage());
+        return new ResponseEntity<>(resourceNotFoundDetails, HttpStatus.UNAUTHORIZED);
+    }
+}
