@@ -26,48 +26,24 @@
             <form>
               <div class="row">
                 <div class="form-group">
-                  <label for="dataCorrecao">Data da correção</label>
+                  <label for="usuario">Usuário (e-mail)</label>
                   <input
-                    type="date"
+                    type="email"
                     class="form-control"
-                    id="dataCorrecao"
-                    name="dataCorrecao"
+                    id="usuario"
+                    name="usuario"
                   />
                 </div>
               </div>
               <br />
               <div class="row">
                 <div class="form-group">
-                  <label for="normais">Correções normais</label>
+                  <label for="normais">Senha</label>
                   <input
-                    type="number"
+                    type="password"
                     class="form-control"
-                    id="qtdNormal"
-                    name="qtdNormal"
-                  />
-                </div>
-              </div>
-              <br />
-              <div class="row">
-                <div class="form-group">
-                  <label for="terceiras">Terceiras correções</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="qtdTerceiraCorrecao"
-                    name="qtdTerceiraCorrecao"
-                  />
-                </div>
-              </div>
-              <br />
-              <div class="row">
-                <div class="form-group">
-                  <label for="avaliacoes">Avaliações de desempenho</label>
-                  <input
-                    type="number"
-                    class="form-control"
-                    id="qtdAvaliacaoDesempenho"
-                    name="qtdAvaliacaoDesempenho"
+                    id="senha"
+                    name="senha"
                   />
                 </div>
               </div>
@@ -88,13 +64,8 @@
                     role="button"
                     type="submit"
                   >
-                    Salvar correção
+                    Entrar
                   </button>
-                </div>
-                <div class="col-md-1">
-                  <a class="btn btn-primary" href="index.html" role="button"
-                    >Voltar</a
-                  >
                 </div>
               </div>
 
@@ -109,6 +80,7 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
     const backEnd = "https://correcao-api.herokuapp.com";
+    var apiSecret = "correcao-api-tataia-base64-producao";
 
     document
       .getElementById("saveButton")
@@ -133,15 +105,18 @@
         object[key] = value;
       });
       console.info(object);
+      var headers = {
+        apiSecret: apiSecret,
+      };
       await axios
-        .post(`${backEnd}/api/correcoes`, object)
+        .post(`${backEnd}/api/auth/token`, object, { headers })
         .then((data) => {
           window.location.href = "/correcao-api";
         })
         .catch((error) => {
           if (error.response.status >= 500) {
             document.getElementById("error").innerHTML =
-              "Dados enviados em formato inválido. Tente novamente.";
+              "Usuário ou senha inválidos. Tente novamente.";
           } else {
             document.getElementById("error").innerHTML =
               error.response.data.message;

@@ -84,6 +84,9 @@
   </body>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
+    var token = localStorage.getItem("token");
+    var apiSecret = "correcao-api-tataia-base64-producao";
+
     const backEnd = "https://correcao-api.herokuapp.com";
 
     document.getElementById("loadingTabela").style.display = "block";
