@@ -92,7 +92,10 @@
                   </button>
                 </div>
                 <div class="col-md-1">
-                  <a class="btn btn-primary" href="index.html" role="button"
+                  <a
+                    class="btn btn-primary"
+                    href="/correcao-api/index.html"
+                    role="button"
                     >Voltar</a
                   >
                 </div>
@@ -109,8 +112,17 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
     var token = localStorage.getItem("token");
+
+    if (!token || token === undefined) {
+      window.location.href = "/correcao-api/login.html";
+    }
+
     var apiSecret = "correcao-api-tataia-base64-producao";
-    
+    var headers = {
+      "api-secret": apiSecret,
+      Authorization: `bearer ${token}`,
+    };
+
     const backEnd = "https://correcao-api.herokuapp.com";
 
     document
@@ -136,12 +148,16 @@
         object[key] = value;
       });
       console.info(object);
+
       await axios
-        .post(`${backEnd}/api/correcoes`, object)
+        .post(`${backEnd}/api/correcoes`, object, { headers })
         .then((data) => {
-          window.location.href = "/correcao-api";
+          window.location.href = "/correcao-api/index.html";
         })
         .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/correcao-api/login.html";
+          }
           if (error.response.status >= 500) {
             document.getElementById("error").innerHTML =
               "Dados enviados em formato inválido. Tente novamente.";

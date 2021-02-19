@@ -71,7 +71,10 @@
       </div>
       <br />
       <div class="col m3">
-        <a class="btn btn-primary" href="salvarCorrecao.html" role="button"
+        <a
+          class="btn btn-primary"
+          href="/correcao-api/salvarCorrecao.html"
+          role="button"
           >Nova correção</a
         >
       </div>
@@ -85,7 +88,16 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
     var token = localStorage.getItem("token");
+
+    if (!token || token === undefined) {
+      window.location.href = "/correcao-api/login.html";
+    }
+
     var apiSecret = "correcao-api-tataia-base64-producao";
+    var headers = {
+      "api-secret": apiSecret,
+      Authorization: `bearer ${token}`,
+    };
 
     const backEnd = "https://correcao-api.herokuapp.com";
 
@@ -99,7 +111,7 @@
 
     async function buscarTotaisCards() {
       await axios
-        .get(`${backEnd}/api/correcoes/totais`)
+        .get(`${backEnd}/api/correcoes/totais`, { headers })
         .then((data) => {
           document.getElementById("loadingCard1").style.display = "none";
           document.getElementById("loadingCard2").style.display = "none";
@@ -117,6 +129,9 @@
             totais.totalDiasCorridos;
         })
         .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/correcao-api/login.html";
+          }
           console.error(error);
         });
     }
@@ -134,7 +149,7 @@
         <tbody>
         `;
       await axios
-        .get(`${backEnd}/api/correcoes`)
+        .get(`${backEnd}/api/correcoes`, { headers })
         .then((data) => {
           document.getElementById("loadingTabela").style.display = "none";
           data.data.forEach((correcao) => {
@@ -154,6 +169,9 @@
           document.getElementById("tabelaCorrecoes").innerHTML = dadosTabela;
         })
         .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/correcao-api/login.html";
+          }
           console.error(error);
         });
     }
@@ -180,11 +198,14 @@
       document.getElementById("loadingCard2").style.display = "none";
       document.getElementById("loadingCard3").style.display = "none";
       await axios
-        .delete(`${backEnd}/api/correcoes/${id}`)
+        .delete(`${backEnd}/api/correcoes/${id}`, { headers })
         .then((data) => {
           location.reload();
         })
         .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/correcao-api/login.html";
+          }
           document.getElementById("error").innerHTML =
             error.response.data.message;
         });

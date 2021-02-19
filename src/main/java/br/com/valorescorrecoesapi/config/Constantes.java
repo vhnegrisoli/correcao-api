@@ -16,4 +16,5 @@ public interface Constantes {
     String EMPTY = "";
     String TOKEN_ENDPOINT = "api/auth/token";
     String CORRECAO_ENDPOINT = "api/correcoes";
+    String OPTIONS_METHOD = "OPTIONS";
 }

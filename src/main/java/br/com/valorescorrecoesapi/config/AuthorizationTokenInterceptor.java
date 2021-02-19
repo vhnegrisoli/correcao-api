@@ -28,6 +28,9 @@ public class AuthorizationTokenInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request,
                              HttpServletResponse response,
                              Object handler) {
+        if (isOptions(request)) {
+            return true;
+        }
         validarHeaderApiSecret(request);
         validarHeaderAuthorization(request);
         return true;
@@ -83,5 +86,9 @@ public class AuthorizationTokenInterceptor implements HandlerInterceptor {
 
     private boolean isEndpointNecessarioParaHeaderAuthorization(HttpServletRequest request) {
         return request.getRequestURI().contains(CORRECAO_ENDPOINT);
+    }
+
+    private boolean isOptions(HttpServletRequest request) {
+        return request.getMethod().equals(OPTIONS_METHOD);
     }
 }

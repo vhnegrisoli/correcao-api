@@ -79,8 +79,12 @@
   </body>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
+    localStorage.removeItem("token");
     const backEnd = "https://correcao-api.herokuapp.com";
     var apiSecret = "correcao-api-tataia-base64-producao";
+    var headers = {
+      "api-secret": apiSecret,
+    };
 
     document
       .getElementById("saveButton")
@@ -96,32 +100,37 @@
     async function salvarCorrecao() {
       document.getElementById("loadingSave").style.display = "block";
       document.getElementById("saveButton").style.display = "none";
-      var object = {};
+      var request = {};
       var formData = new FormData(document.querySelector("form"));
       new FormData(document.querySelector("form")).forEach(function (
         value,
         key
       ) {
-        object[key] = value;
+        request[key] = value;
       });
-      console.info(object);
-      var headers = {
-        apiSecret: apiSecret,
-      };
-      await axios
-        .post(`${backEnd}/api/auth/token`, object, { headers })
-        .then((data) => {
-          window.location.href = "/correcao-api";
-        })
-        .catch((error) => {
-          if (error.response.status >= 500) {
-            document.getElementById("error").innerHTML =
-              "Usuário ou senha inválidos. Tente novamente.";
-          } else {
-            document.getElementById("error").innerHTML =
-              error.response.data.message;
-          }
-        });
+      console.info(request);
+
+      try {
+        await axios
+          .post(`${backEnd}/api/auth/token`, request, { headers })
+          .then((data) => {
+            console.log(data.data.accessToken);
+            localStorage.setItem("token", data.data.accessToken);
+            window.location.href = "/correcao-api/index.html";
+          })
+          .catch((error) => {
+            console.log(error.response);
+            if (error.response.status >= 500) {
+              document.getElementById("error").innerHTML =
+                "Usuário ou senha inválidos. Tente novamente.";
+            } else {
+              document.getElementById("error").innerHTML =
+                error.response.data.message;
+            }
+          });
+      } catch (error) {
+        console.log(error);
+      }
       document.getElementById("loadingSave").style.display = "none";
       document.getElementById("saveButton").style.display = "block";
     }
