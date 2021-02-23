@@ -88,7 +88,7 @@
       <div class="row">
         <div class="col m12">
           <div class="card col s12 center-align">
-            <span class="card-title">Redações diárias</span>
+            <span class="card-title">Lucro diário</span>
             <div class="card-content">
               <canvas id="grafico1" width="400" height="250"></canvas>
             </div>
@@ -96,7 +96,7 @@
         </div>
         <div class="col m12">
           <div class="card col s12 center-align">
-            <span class="card-title">Lucro por tipo de redação</span>
+            <span class="card-title">Lucro por tipo</span>
             <div class="card-content">
               <canvas id="grafico2" width="400" height="250"></canvas>
             </div>
@@ -278,14 +278,14 @@
       };
     };
 
-    var grafico1 = definirDados(null, "Redações por dias", null);
+    var grafico1 = definirDados(null, "Lucro diário", null);
     var grafico1Visual = new Chart(ctx, {
-      type: "horizontalBar",
+      type: "bar",
       data: grafico1,
       options: {},
     });
 
-    var grafico2 = definirDadosPie(null, "Redações por tipo", null);
+    var grafico2 = definirDadosPie(null, "Lucro por tipo", null);
     var grafico2Visual = new Chart(ctx2, {
       type: "pie",
       data: grafico2,
