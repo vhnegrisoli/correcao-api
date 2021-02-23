@@ -11,6 +11,7 @@
     integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
     crossorigin="anonymous"
   />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
   <script
     src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
@@ -83,6 +84,26 @@
         <span class="sr-only"></span>
       </div>
       <table class="table" id="tabelaCorrecoes"></table>
+      <br />
+      <div class="row">
+        <div class="col m12">
+          <div class="card col s12 center-align">
+            <span class="card-title">Redações diárias</span>
+            <div class="card-content">
+              <canvas id="grafico1" width="400" height="250"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col m12">
+          <div class="card col s12 center-align">
+            <span class="card-title">Lucro por tipo de redação</span>
+            <div class="card-content">
+              <canvas id="grafico2" width="400" height="250"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
     </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -106,8 +127,13 @@
     document.getElementById("loadingCard2").style.display = "block";
     document.getElementById("loadingCard3").style.display = "block";
 
+    var ctx = document.getElementById("grafico1").getContext("2d");
+    var ctx2 = document.getElementById("grafico2").getContext("2d");
+
     buscarTotaisCards();
     buscarCorrecoes();
+    buscarGrafico1();
+    buscarGrafico2();
 
     async function buscarTotaisCards() {
       await axios
@@ -130,7 +156,7 @@
         })
         .catch((error) => {
           if (error.response.status === 401) {
-            window.location.href = "/correcao-api/login.html";
+            window.location.href = "/login.html";
           }
           console.error(error);
         });
@@ -170,7 +196,7 @@
         })
         .catch((error) => {
           if (error.response.status === 401) {
-            window.location.href = "/correcao-api/login.html";
+            window.location.href = "/login.html";
           }
           console.error(error);
         });
@@ -204,10 +230,108 @@
         })
         .catch((error) => {
           if (error.response.status === 401) {
-            window.location.href = "/correcao-api/login.html";
+            window.location.href = "/login.html";
           }
           document.getElementById("error").innerHTML =
             error.response.data.message;
+        });
+    }
+
+    definirDados = (labels, label, data) => {
+      return {
+        labels: labels ? labels : [""],
+        datasets: [
+          {
+            label,
+            backgroundColor: "rgb(255, 99, 132)",
+            borderColor: "rgb(255, 99, 132)",
+            data: data ? data : [0],
+            fill: false,
+          },
+        ],
+      };
+    };
+    definirDadosPie = (labels, label, data) => {
+      return {
+        labels: labels ? labels : [""],
+        datasets: [
+          {
+            label,
+            backgroundColor: [
+              "#3e95cd",
+              "#8e5ea2",
+              "#3cba9f",
+              "#e8c3b9",
+              "#c45850",
+            ],
+            borderColor: [
+              "#3e95cd",
+              "#8e5ea2",
+              "#3cba9f",
+              "#e8c3b9",
+              "#c45850",
+            ],
+            data: data ? data : [0],
+            fill: false,
+          },
+        ],
+      };
+    };
+
+    var grafico1 = definirDados(null, "Redações por dias", null);
+    var grafico1Visual = new Chart(ctx, {
+      type: "horizontalBar",
+      data: grafico1,
+      options: {},
+    });
+
+    var grafico2 = definirDadosPie(null, "Redações por tipo", null);
+    var grafico2Visual = new Chart(ctx2, {
+      type: "pie",
+      data: grafico2,
+      options: {},
+    });
+
+    async function buscarGrafico1() {
+      await axios
+        .get(`${backEnd}/api/correcoes/diarias`, { headers })
+        .then((data) => {
+          var diarias = data.data;
+          grafico1.labels = Object.values(diarias).map((item) => item.dia);
+          grafico1.datasets[0].data = Object.values(diarias).map(
+            (item) => item.valor
+          );
+          grafico1Visual.update();
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/login.html";
+          }
+          console.error(error);
+        });
+    }
+    async function buscarGrafico2() {
+      await axios
+        .get(`${backEnd}/api/correcoes/por-tipo`, { headers })
+        .then((data) => {
+          var tipos = data.data;
+          grafico2.labels = [
+            "Normais",
+            "Terceiras correções",
+            "Avaliações de Desempenho",
+          ];
+          grafico2.datasets[0].data = [
+            tipos.normais,
+            tipos.terceirasCorrecoes,
+            tipos.avaliacoesDesempenho,
+          ];
+          grafico2Visual.update();
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/login.html";
+          }
+          console.error(error);
         });
     }
   </script>

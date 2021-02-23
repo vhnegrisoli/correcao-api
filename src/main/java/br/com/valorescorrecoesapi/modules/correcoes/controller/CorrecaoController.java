@@ -1,9 +1,6 @@
 package br.com.valorescorrecoesapi.modules.correcoes.controller;
 
-import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoDetalheResponse;
-import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoRequest;
-import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoResponse;
-import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoTotaisResponse;
+import br.com.valorescorrecoesapi.modules.correcoes.dto.*;
 import br.com.valorescorrecoesapi.modules.correcoes.service.CorrecaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -65,5 +62,15 @@ public class CorrecaoController {
                                                          @RequestHeader(value="authorization") String authorization,
                                                          @RequestParam(required = false) Integer ano) {
         return service.buscarTotaisDoAnoAtual(ano);
+    }
+
+    @GetMapping("diarias")
+    public List<CorrecoesDiarias> buscarCorrecoesPorDia() {
+        return service.buscarCorrecoesPorDia();
+    }
+
+    @GetMapping("por-tipo")
+    public CorrecoesPorTipo buscarCorrecoesPorTipo() {
+        return service.buscarCorrecoesPorTipo();
     }
 }

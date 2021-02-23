@@ -1,10 +1,8 @@
 package br.com.valorescorrecoesapi.modules.correcoes.service;
 
 import br.com.valorescorrecoesapi.config.exception.ValidacaoException;
-import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoDetalheResponse;
-import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoRequest;
-import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoResponse;
-import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoTotaisResponse;
+import br.com.valorescorrecoesapi.modules.correcoes.dto.*;
+import br.com.valorescorrecoesapi.modules.correcoes.enums.ETipoCorrecao;
 import br.com.valorescorrecoesapi.modules.correcoes.model.Correcao;
 import br.com.valorescorrecoesapi.modules.correcoes.repository.CorrecaoRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +15,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static br.com.valorescorrecoesapi.config.Constantes.FORMATO_LOCAL_DATE;
-import static br.com.valorescorrecoesapi.config.Constantes.TOTAL_CORRECOES_POR_DIA;
+import static br.com.valorescorrecoesapi.config.Constantes.*;
+import static br.com.valorescorrecoesapi.modules.correcoes.util.NumeroUtil.converterParaDuasCasasDecimais;
 import static org.springframework.util.ObjectUtils.isEmpty;
 
 @Slf4j
@@ -116,5 +114,34 @@ public class CorrecaoService {
     public CorrecaoTotaisResponse buscarTotaisDoAnoAtual(Integer ano) {
         return CorrecaoTotaisResponse.gerar(repository
             .findByAno(isEmpty(ano) ? LocalDate.now().getYear() : ano));
+    }
+
+    public List<CorrecoesDiarias> buscarCorrecoesPorDia() {
+        var correcoes = repository.findByAno(LocalDate.now().getYear());
+        return correcoes
+            .stream()
+            .map(CorrecoesDiarias::converterDe)
+            .collect(Collectors.toList());
+    }
+
+    public CorrecoesPorTipo buscarCorrecoesPorTipo() {
+        var correcoes = repository.findByAno(LocalDate.now().getYear());
+
+        var normais = converterParaDuasCasasDecimais(correcoes
+            .stream()
+            .map(Correcao::getQtdNormal)
+            .reduce(ZERO, Integer::sum) * ETipoCorrecao.NORMAL.getValorCorrecao().doubleValue());
+
+        var terceirasCorrecoes = converterParaDuasCasasDecimais(correcoes
+            .stream()
+            .map(Correcao::getQtdTerceiraCorrecao)
+            .reduce(ZERO, Integer::sum) * ETipoCorrecao.TERCEIRA_CORRECAO.getValorCorrecao().doubleValue());
+
+        var avaliacoesDesempenho = converterParaDuasCasasDecimais(correcoes
+            .stream()
+            .map(Correcao::getQtdAvaliacaoDesempenho)
+            .reduce(ZERO, Integer::sum) * ETipoCorrecao.AVALIACAO_DESEMPENHO.getValorCorrecao().doubleValue());
+
+        return new CorrecoesPorTipo(normais, terceirasCorrecoes, avaliacoesDesempenho);
     }
 }
