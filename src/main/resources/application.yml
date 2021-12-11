@@ -32,6 +32,3 @@ spring:
 authorization:
   api-secret: YmFzZTY0LWRldi1hcHAtdGF0YWlhLWNvcnJlY2FvLXRlc3Rl
   jwt-secret: dGF0YWlhLWFwaS1qd3Qtc2VjcmV0LWRldg==
-  user:
-    user: teste@teste.com
-    password: $2a$10$2rtDSnfL6yqGpHkUSs1gn.Y/Qen6o80191LRcizdkOwN.fItGQXii

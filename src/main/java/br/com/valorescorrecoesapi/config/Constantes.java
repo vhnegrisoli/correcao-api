@@ -8,7 +8,9 @@ public interface Constantes {
     Integer DUAS_CASAS_DECIMAIS = 2;
     Integer ZERO = 0;
     Integer DEZ_MINUTOS = 10;
-    String USUARIO = "usuario";
+    String USUARIO_ID = "id";
+    String USUARIO_NOME = "nome";
+    String USUARIO_EMAIL = "email";
     String API_SECRET_HEADER = "api-secret";
     String AUTHORIZATION_HEADER = "authorization";
     String BEARER = "bearer";

@@ -1,6 +1,9 @@
 package br.com.valorescorrecoesapi.modules.correcoes.model;
 
+import br.com.valorescorrecoesapi.modules.autenticacao.model.Usuario;
 import br.com.valorescorrecoesapi.modules.correcoes.dto.CorrecaoRequest;
+import br.com.valorescorrecoesapi.modules.correcoes.enums.EProcessoSeletivo;
+import br.com.valorescorrecoesapi.modules.correcoes.enums.EStatusCorrecao;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +12,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import static br.com.valorescorrecoesapi.modules.correcoes.enums.EStatusCorrecao.ABERTA;
 
 @Data
 @Entity
@@ -46,12 +51,25 @@ public class Correcao {
     @Column(name = "QTD_AVALIACAO_DESEMPENHO", nullable = false)
     private Integer qtdAvaliacaoDesempenho;
 
+    @ManyToOne
+    @JoinColumn(name = "FK_USUARIO", nullable = false)
+    private Usuario usuario;
+
+    @Column(name = "STATUS", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EStatusCorrecao status;
+
+    @Column(name = "PROCESSO_SELETIVO", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private EProcessoSeletivo processoSeletivo;
+
     @PrePersist
     public void prePersist() {
         dataCadastro = LocalDateTime.now();
+        status = ABERTA;
     }
 
-    public static Correcao gerarCorrecao(CorrecaoRequest request) {
+    public static Correcao gerarCorrecao(CorrecaoRequest request, Usuario usuario) {
         return Correcao
             .builder()
             .ano(request.getDataCorrecao().getYear())
@@ -61,6 +79,7 @@ public class Correcao {
             .qtdNormal(request.getQtdNormal())
             .qtdTerceiraCorrecao(request.getQtdTerceiraCorrecao())
             .qtdAvaliacaoDesempenho(request.getQtdAvaliacaoDesempenho())
+            .usuario(usuario)
             .build();
     }
 }

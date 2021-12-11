@@ -21,14 +21,6 @@ public class CorrecaoController {
         return service.salvarCorrecao(request);
     }
 
-    @PutMapping("{id}")
-    public CorrecaoResponse editarCorrecao(@RequestHeader(value="api-secret") String apiSecret,
-                                           @RequestHeader(value="authorization") String authorization,
-                                           @PathVariable Integer id,
-                                           @RequestBody CorrecaoRequest request) {
-        return service.editarCorrecao(id, request);
-    }
-
     @DeleteMapping("{id}")
     public void removerCorrecao(@RequestHeader(value="api-secret") String apiSecret,
                                 @RequestHeader(value="authorization") String authorization,
@@ -41,20 +33,6 @@ public class CorrecaoController {
                                                   @RequestHeader(value="authorization") String authorization,
                                                   @RequestParam(required = false) Integer ano) {
         return service.buscarCorrecoesPorAno(ano);
-    }
-
-    @GetMapping("{id}")
-    public CorrecaoDetalheResponse buscarCorrecaoPorId(@RequestHeader(value="api-secret") String apiSecret,
-                                                       @RequestHeader(value="authorization") String authorization,
-                                                       @PathVariable Integer id) {
-        return service.buscarCorrecaoPorId(id);
-    }
-
-    @GetMapping("data/{dataCorrecao}")
-    public CorrecaoDetalheResponse buscarCorrecaoPorData(@RequestHeader(value="api-secret") String apiSecret,
-                                                         @RequestHeader(value="authorization") String authorization,
-                                                         @PathVariable String dataCorrecao) {
-        return service.buscarCorrecaoPorData(dataCorrecao);
     }
 
     @GetMapping("totais")

@@ -32,6 +32,3 @@ spring:
 authorization:
   api-secret: ${API_SECRET}
   jwt-secret: ${JWT_SECRET}
-  user:
-    user: ${API_USER}
-    password: ${API_PASSWORD}
