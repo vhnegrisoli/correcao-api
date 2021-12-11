@@ -60,7 +60,7 @@ public class AuthorizationTokenInterceptor implements HandlerInterceptor {
     private void validarHeaderAuthorization(HttpServletRequest request) {
         if (isEndpointNecessarioParaHeaderAuthorization(request)) {
             validarRequestSemHeaderAuthorization(request);
-            service.validarUsuarioAutenticado(extractBearerFromToken(request.getHeader(AUTHORIZATION_HEADER)));
+            service.validarUsuarioAutenticado(request.getHeader(AUTHORIZATION_HEADER));
         }
     }
 
@@ -68,12 +68,6 @@ public class AuthorizationTokenInterceptor implements HandlerInterceptor {
         if (isEmpty(request.getHeader(AUTHORIZATION_HEADER))) {
             gerarAutenticacaoException("Não autenticado. Informe um token de acesso.");
         }
-    }
-
-    private String extractBearerFromToken(String accessToken) {
-        accessToken = accessToken.replace(BEARER, EMPTY);
-        accessToken = accessToken.replace(EMPTY_SPACE, EMPTY);
-        return accessToken;
     }
 
     private void gerarAutenticacaoException(String message) {

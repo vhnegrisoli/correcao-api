@@ -9,12 +9,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class InterceptorConfig implements WebMvcConfigurer {
 
     @Bean
-    public AuthorizationTokenInterceptor logInterceptor() {
+    public AuthorizationTokenInterceptor authorizationTokenInterceptor() {
         return new AuthorizationTokenInterceptor();
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(logInterceptor());
+        registry.addInterceptor(authorizationTokenInterceptor());
     }
 }

@@ -87,6 +87,7 @@ public class JwtService {
     }
 
     public void validarUsuarioAutenticado(String token) {
+        token = extrairBearerDoToken(token);
         var usuario = (String) descriptografarJwt(token).getBody().get(USUARIO_ID);
         if (isEmpty(usuario)) {
             throw new AutenticacaoException("Erro. Usuário ou senha inválidos.");
@@ -119,10 +120,11 @@ public class JwtService {
 
     public Usuario obterUsuarioAutenticado() {
         try {
-            var token = RequestUtil.getCurrentRequest().getHeader("Authorization");
+            var token = extrairBearerDoToken(RequestUtil.getCurrentRequest().getHeader("Authorization"));
             var email = (String) descriptografarJwt(token).getBody().get(USUARIO_EMAIL);
             return buscarPorEmail(email);
         } catch (Exception ex) {
+            ex.printStackTrace();
             throw new ValidacaoException("Não foi possível recuperar o usuário autenticado.");
         }
     }
@@ -131,5 +133,11 @@ public class JwtService {
         return usuarioRepository
             .findByEmail(email)
             .orElseThrow(() -> new AutenticacaoException("Usuário incorreto. Tente novamente."));
+    }
+
+    private String extrairBearerDoToken(String accessToken) {
+        accessToken = accessToken.replace(BEARER, EMPTY);
+        accessToken = accessToken.replace(EMPTY_SPACE, EMPTY);
+        return accessToken;
     }
 }
