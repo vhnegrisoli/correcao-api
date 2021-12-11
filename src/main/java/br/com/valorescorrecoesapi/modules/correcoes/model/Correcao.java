@@ -13,6 +13,7 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import static br.com.valorescorrecoesapi.modules.correcoes.enums.EProcessoSeletivo.ENEM_2021;
 import static br.com.valorescorrecoesapi.modules.correcoes.enums.EStatusCorrecao.ABERTA;
 
 @Data
@@ -67,6 +68,7 @@ public class Correcao {
     public void prePersist() {
         dataCadastro = LocalDateTime.now();
         status = ABERTA;
+        processoSeletivo = ENEM_2021;
     }
 
     public static Correcao gerarCorrecao(CorrecaoRequest request, Usuario usuario) {
