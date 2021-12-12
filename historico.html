@@ -116,6 +116,10 @@
 
     var processo = url.searchParams.get("historico");
 
+    if (!processo || processo === undefined) {
+      window.location.href = "/correcao-api/index.html";
+    }
+
     var token = localStorage.getItem("token");
 
     if (!token || token === undefined) {
