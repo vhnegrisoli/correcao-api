@@ -104,6 +104,15 @@
         </div>
       </div>
       <br />
+      <br />
+      <div class="row" id="historico"></div>
+      <br />
+      <div class="col m3">
+        <a class="btn btn-primary" href="/correcao-api/login.html" role="button"
+          >Logout</a
+        >
+      </div>
+      <br />
     </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -134,6 +143,7 @@
     buscarCorrecoes();
     buscarGrafico1();
     buscarGrafico2();
+    buscarHistoricos();
 
     async function buscarTotaisCards() {
       await axios
@@ -326,6 +336,40 @@
             tipos.avaliacoesDesempenho,
           ];
           grafico2Visual.update();
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/correcao-api/login.html";
+          }
+          console.error(error);
+        });
+    }
+    async function buscarHistoricos() {
+      await axios
+        .get(`${backEnd}/api/historico/disponiveis`, { headers })
+        .then((data) => {
+          var totais = data.data;
+          console.log(totais);
+          var historicos = "";
+          totais.forEach((historico) => {
+            historicos =
+              historicos +
+              `
+              <div class="col m3">
+                <div class="card" style="width: 18rem">
+                  <div class="card-body">
+                    <div>
+                      <span class="sr-only"></span>
+                    </div>
+                    <h5 class="card-title">${historico.processoSeletivoDetalhe}</h5>
+                   <a href=historico.html?historico=${historico.processoSeletivo} /> <button type="button" class="btn btn-danger" onsubmit="historico.html/${historico.processoSeletivo}">Acessar</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+          console.log(historicos);
+          document.getElementById("historico").innerHTML = historicos;
         })
         .catch((error) => {
           if (error.response.status === 401) {

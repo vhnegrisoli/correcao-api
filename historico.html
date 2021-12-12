@@ -18,7 +18,14 @@
     crossorigin="anonymous"
   ></script>
   <body>
+    <br />
     <div class="container">
+      <div class="col m3">
+        <a class="btn btn-primary" href="/correcao-api/index.html" role="button"
+          >Voltar</a
+        >
+      </div>
+
       <br />
       <div class="row">
         <div class="col m3">
@@ -71,15 +78,6 @@
         </div>
       </div>
       <br />
-      <div class="col m3">
-        <a
-          class="btn btn-primary"
-          href="/correcao-api/salvarCorrecao.html"
-          role="button"
-          >Nova correção</a
-        >
-      </div>
-      <br />
       <div class="spinner-border text-primary" role="status" id="loadingTabela">
         <span class="sr-only"></span>
       </div>
@@ -104,10 +102,20 @@
         </div>
       </div>
       <br />
+      <div class="col m3">
+        <a class="btn btn-primary" href="/correcao-api/login.html" role="button"
+          >Logout</a
+        >
+      </div>
+      <br />
     </div>
   </body>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
+    var url = new URL(window.location.href);
+
+    var processo = url.searchParams.get("historico");
+
     var token = localStorage.getItem("token");
 
     if (!token || token === undefined) {
@@ -137,7 +145,7 @@
 
     async function buscarTotaisCards() {
       await axios
-        .get(`${backEnd}/api/correcoes/totais`, { headers })
+        .get(`${backEnd}/api/historico/totais/${processo}`, { headers })
         .then((data) => {
           document.getElementById("loadingCard1").style.display = "none";
           document.getElementById("loadingCard2").style.display = "none";
@@ -169,13 +177,12 @@
             <th scope="col">Data</th>
             <th scope="col">Total corrigido</th>
             <th scope="col">Valor total</th>
-            <th scope="col">Remover</th>
           </tr>
         </thead>
         <tbody>
         `;
       await axios
-        .get(`${backEnd}/api/correcoes`, { headers })
+        .get(`${backEnd}/api/historico/processo/${processo}`, { headers })
         .then((data) => {
           document.getElementById("loadingTabela").style.display = "none";
           data.data.forEach((correcao) => {
@@ -185,10 +192,7 @@
             <td>${correcao.dataCorrecao}</td>
             <td>${correcao.totalCorrigido}</td>
             <td>${formatarMoeda(correcao.valorTotal)}</td>
-            <td>
-            <button type="button" class="btn btn-danger" onclick="removerCorrecao(${
-              correcao.id
-            })">Remover</button></td>
+            
           </tr>`;
           });
           dadosTabela = dadosTabela + "</tbody>";
@@ -216,25 +220,6 @@
       }
       valorStr = "R$" + valorStr;
       return valorStr;
-    }
-
-    async function removerCorrecao(id) {
-      document.getElementById("loadingTabela").style.display = "none";
-      document.getElementById("loadingCard1").style.display = "none";
-      document.getElementById("loadingCard2").style.display = "none";
-      document.getElementById("loadingCard3").style.display = "none";
-      await axios
-        .delete(`${backEnd}/api/correcoes/${id}`, { headers })
-        .then((data) => {
-          location.reload();
-        })
-        .catch((error) => {
-          if (error.response.status === 401) {
-            window.location.href = "/correcao-api/login.html";
-          }
-          document.getElementById("error").innerHTML =
-            error.response.data.message;
-        });
     }
 
     definirDados = (labels, label, data) => {
@@ -294,7 +279,7 @@
 
     async function buscarGrafico1() {
       await axios
-        .get(`${backEnd}/api/correcoes/diarias`, { headers })
+        .get(`${backEnd}/api/historico/diarias/${processo}`, { headers })
         .then((data) => {
           var diarias = data.data;
           grafico1.labels = Object.values(diarias).map((item) => item.dia);
@@ -312,7 +297,7 @@
     }
     async function buscarGrafico2() {
       await axios
-        .get(`${backEnd}/api/correcoes/por-tipo`, { headers })
+        .get(`${backEnd}/api/historico/por-tipo/${processo}`, { headers })
         .then((data) => {
           var tipos = data.data;
           grafico2.labels = [
