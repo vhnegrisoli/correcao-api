@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Correções</title>
+  </head>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
+    crossorigin="anonymous"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+    crossorigin="anonymous"
+  ></script>
+  <body>
+    <div class="container">
+      <br />
+      <div class="row">
+        <div class="col m3">
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <div
+                class="spinner-border text-primary"
+                role="status"
+                id="loadingCard1"
+              >
+                <span class="sr-only"></span>
+              </div>
+              <h5 class="card-title" id="totalCorrecoes"></h5>
+
+              <p class="card-text">Total corrigido até o momento</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col m3">
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <div
+                class="spinner-border text-primary"
+                role="status"
+                id="loadingCard2"
+              >
+                <span class="sr-only"></span>
+              </div>
+              <h5 class="card-title" id="valorTotalRecebido"></h5>
+              <p class="card-text">Total recebido até o momento.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col m3">
+          <div class="card" style="width: 18rem">
+            <div class="card-body">
+              <div
+                class="spinner-border text-primary"
+                role="status"
+                id="loadingCard3"
+              >
+                <span class="sr-only"></span>
+              </div>
+              <h5 class="card-title" id="totalDiasCorridos"></h5>
+              <p class="card-text">Dias corridos.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
+      <div class="col m3">
+        <a
+          class="btn btn-primary"
+          href="/correcao-api/salvarCorrecao.html"
+          role="button"
+          >Nova correção</a
+        >
+      </div>
+      <br />
+      <div class="spinner-border text-primary" role="status" id="loadingTabela">
+        <span class="sr-only"></span>
+      </div>
+      <table class="table" id="tabelaCorrecoes"></table>
+      <br />
+      <div class="row">
+        <div class="col m12">
+          <div class="card col s12 center-align">
+            <span class="card-title">Lucro diário</span>
+            <div class="card-content">
+              <canvas id="grafico1" width="400" height="250"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col m12">
+          <div class="card col s12 center-align">
+            <span class="card-title">Lucro por tipo</span>
+            <div class="card-content">
+              <canvas id="grafico2" width="400" height="250"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br />
+    </div>
+  </body>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    var token = localStorage.getItem("token");
+
+    if (!token || token === undefined) {
+      window.location.href = "/correcao-api/login.html";
+    }
+
+    var apiSecret = "correcao-api-tataia-base64-producao";
+    var headers = {
+      "api-secret": apiSecret,
+      Authorization: `bearer ${token}`,
+    };
+
+    const backEnd = "https://correcao-api.herokuapp.com";
+
+    document.getElementById("loadingTabela").style.display = "block";
+    document.getElementById("loadingCard1").style.display = "block";
+    document.getElementById("loadingCard2").style.display = "block";
+    document.getElementById("loadingCard3").style.display = "block";
+
+    var ctx = document.getElementById("grafico1").getContext("2d");
+    var ctx2 = document.getElementById("grafico2").getContext("2d");
+
+    buscarTotaisCards();
+    buscarCorrecoes();
+    buscarGrafico1();
+    buscarGrafico2();
+
+    async function buscarTotaisCards() {
+      await axios
+        .get(`${backEnd}/api/correcoes/totais`, { headers })
+        .then((data) => {
+          document.getElementById("loadingCard1").style.display = "none";
+          document.getElementById("loadingCard2").style.display = "none";
+          document.getElementById("loadingCard3").style.display = "none";
+          var totais = data.data;
+          document.getElementById("totalCorrecoes").innerHTML =
+            totais.totalCorrecoes;
+          var valorTotalRecebidoFormatado = formatarMoeda(
+            totais.valorTotalRecebido
+          );
+          document.getElementById(
+            "valorTotalRecebido"
+          ).innerHTML = valorTotalRecebidoFormatado;
+          document.getElementById("totalDiasCorridos").innerHTML =
+            totais.totalDiasCorridos;
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/correcao-api/login.html";
+          }
+          console.error(error);
+        });
+    }
+
+    async function buscarCorrecoes() {
+      var dadosTabela = `
+        <thead>
+          <tr>
+            <th scope="col">Data</th>
+            <th scope="col">Total corrigido</th>
+            <th scope="col">Valor total</th>
+            <th scope="col">Remover</th>
+          </tr>
+        </thead>
+        <tbody>
+        `;
+      await axios
+        .get(`${backEnd}/api/correcoes`, { headers })
+        .then((data) => {
+          document.getElementById("loadingTabela").style.display = "none";
+          data.data.forEach((correcao) => {
+            dadosTabela =
+              dadosTabela +
+              `<tr>
+            <td>${correcao.dataCorrecao}</td>
+            <td>${correcao.totalCorrigido}</td>
+            <td>${formatarMoeda(correcao.valorTotal)}</td>
+            <td>
+            <button type="button" class="btn btn-danger" onclick="removerCorrecao(${
+              correcao.id
+            })">Remover</button></td>
+          </tr>`;
+          });
+          dadosTabela = dadosTabela + "</tbody>";
+          document.getElementById("tabelaCorrecoes").innerHTML = dadosTabela;
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/correcao-api/login.html";
+          }
+          console.error(error);
+        });
+    }
+
+    function formatarMoeda(moeda) {
+      valorStr = moeda.toString().replace(".", ",");
+      console.log(valorStr);
+      try {
+        let array = valorStr.split(",");
+        if (array[1].length === 1) {
+          valorStr = valorStr + "0";
+        }
+      } catch (error) {
+        valorStr = valorStr + ",00";
+        console.error(error);
+      }
+      valorStr = "R$" + valorStr;
+      return valorStr;
+    }
+
+    async function removerCorrecao(id) {
+      document.getElementById("loadingTabela").style.display = "none";
+      document.getElementById("loadingCard1").style.display = "none";
+      document.getElementById("loadingCard2").style.display = "none";
+      document.getElementById("loadingCard3").style.display = "none";
+      await axios
+        .delete(`${backEnd}/api/correcoes/${id}`, { headers })
+        .then((data) => {
+          location.reload();
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/correcao-api/login.html";
+          }
+          document.getElementById("error").innerHTML =
+            error.response.data.message;
+        });
+    }
+
+    definirDados = (labels, label, data) => {
+      return {
+        labels: labels ? labels : [""],
+        datasets: [
+          {
+            label,
+            backgroundColor: "rgb(255, 99, 132)",
+            borderColor: "rgb(255, 99, 132)",
+            data: data ? data : [0],
+            fill: false,
+          },
+        ],
+      };
+    };
+    definirDadosPie = (labels, label, data) => {
+      return {
+        labels: labels ? labels : [""],
+        datasets: [
+          {
+            label,
+            backgroundColor: [
+              "#3e95cd",
+              "#8e5ea2",
+              "#3cba9f",
+              "#e8c3b9",
+              "#c45850",
+            ],
+            borderColor: [
+              "#3e95cd",
+              "#8e5ea2",
+              "#3cba9f",
+              "#e8c3b9",
+              "#c45850",
+            ],
+            data: data ? data : [0],
+            fill: false,
+          },
+        ],
+      };
+    };
+
+    var grafico1 = definirDados(null, "Lucro diário", null);
+    var grafico1Visual = new Chart(ctx, {
+      type: "bar",
+      data: grafico1,
+      options: {},
+    });
+
+    var grafico2 = definirDadosPie(null, "Lucro por tipo", null);
+    var grafico2Visual = new Chart(ctx2, {
+      type: "pie",
+      data: grafico2,
+      options: {},
+    });
+
+    async function buscarGrafico1() {
+      await axios
+        .get(`${backEnd}/api/correcoes/diarias`, { headers })
+        .then((data) => {
+          var diarias = data.data;
+          grafico1.labels = Object.values(diarias).map((item) => item.dia);
+          grafico1.datasets[0].data = Object.values(diarias).map(
+            (item) => item.valor
+          );
+          grafico1Visual.update();
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/correcao-api/login.html";
+          }
+          console.error(error);
+        });
+    }
+    async function buscarGrafico2() {
+      await axios
+        .get(`${backEnd}/api/correcoes/por-tipo`, { headers })
+        .then((data) => {
+          var tipos = data.data;
+          grafico2.labels = [
+            "Normais",
+            "Terceiras correções",
+            "Avaliações de Desempenho",
+          ];
+          grafico2.datasets[0].data = [
+            tipos.normais,
+            tipos.terceirasCorrecoes,
+            tipos.avaliacoesDesempenho,
+          ];
+          grafico2Visual.update();
+        })
+        .catch((error) => {
+          if (error.response.status === 401) {
+            window.location.href = "/correcao-api/login.html";
+          }
+          console.error(error);
+        });
+    }
+  </script>
+</html>

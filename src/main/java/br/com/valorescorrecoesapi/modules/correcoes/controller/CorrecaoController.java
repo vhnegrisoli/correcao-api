@@ -30,25 +30,25 @@ public class CorrecaoController {
 
     @GetMapping
     public List<CorrecaoResponse> buscarCorrecoes(@RequestHeader(value="api-secret") String apiSecret,
-                                                  @RequestHeader(value="authorization") String authorization,
-                                                  @RequestParam(required = false) Integer ano) {
-        return service.buscarCorrecoesPorAno(ano);
+                                                  @RequestHeader(value="authorization") String authorization) {
+        return service.buscarCorrecoes();
     }
 
     @GetMapping("totais")
     public CorrecaoTotaisResponse buscarTotaisDoAnoAtual(@RequestHeader(value="api-secret") String apiSecret,
-                                                         @RequestHeader(value="authorization") String authorization,
-                                                         @RequestParam(required = false) Integer ano) {
-        return service.buscarTotaisDoAnoAtual(ano);
+                                                         @RequestHeader(value="authorization") String authorization) {
+        return service.buscarTotais();
     }
 
     @GetMapping("diarias")
-    public List<CorrecoesDiarias> buscarCorrecoesPorDia() {
+    public List<CorrecoesDiarias> buscarCorrecoesPorDia(@RequestHeader(value="api-secret") String apiSecret,
+                                                        @RequestHeader(value="authorization") String authorization) {
         return service.buscarCorrecoesPorDia();
     }
 
     @GetMapping("por-tipo")
-    public CorrecoesPorTipo buscarCorrecoesPorTipo() {
+    public CorrecoesPorTipo buscarCorrecoesPorTipo(@RequestHeader(value="api-secret") String apiSecret,
+                                                   @RequestHeader(value="authorization") String authorization) {
         return service.buscarCorrecoesPorTipo();
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -74,10 +73,10 @@ public class CorrecaoService {
         }
     }
 
-    public List<CorrecaoResponse> buscarCorrecoesPorAno(Integer ano) {
+    public List<CorrecaoResponse> buscarCorrecoes() {
         var usuarioId = jwtService.obterUsuarioAutenticado().getId();
         return repository
-            .findByAnoAndUsuarioIdAndStatus(isEmpty(ano) ? LocalDate.now().getYear() : ano, usuarioId, ABERTA)
+            .findByUsuarioIdAndStatus(usuarioId, ABERTA)
             .stream()
             .map(CorrecaoResponse::gerar)
             .sorted(Comparator.comparing(CorrecaoResponse::getDataCorrecao))
@@ -91,15 +90,15 @@ public class CorrecaoService {
             .orElseThrow(() -> new ValidacaoException("Não foi encontrada nenhuma correção para este ID ou usuário."));
     }
 
-    public CorrecaoTotaisResponse buscarTotaisDoAnoAtual(Integer ano) {
+    public CorrecaoTotaisResponse buscarTotais() {
         var usuarioId = jwtService.obterUsuarioAutenticado().getId();
         return CorrecaoTotaisResponse.gerar(repository
-            .findByAnoAndUsuarioIdAndStatus(isEmpty(ano) ? LocalDate.now().getYear() : ano, usuarioId, ABERTA));
+            .findByUsuarioIdAndStatus(usuarioId, ABERTA));
     }
 
     public List<CorrecoesDiarias> buscarCorrecoesPorDia() {
         var usuarioId = jwtService.obterUsuarioAutenticado().getId();
-        var correcoes = repository.findByAnoAndUsuarioIdAndStatus(LocalDate.now().getYear(), usuarioId, ABERTA);
+        var correcoes = repository.findByUsuarioIdAndStatus(usuarioId, ABERTA);
         return correcoes
             .stream()
             .map(CorrecoesDiarias::converterDe)
@@ -108,7 +107,7 @@ public class CorrecaoService {
 
     public CorrecoesPorTipo buscarCorrecoesPorTipo() {
         var usuarioId = jwtService.obterUsuarioAutenticado().getId();
-        var correcoes = repository.findByAnoAndUsuarioIdAndStatus(LocalDate.now().getYear(), usuarioId, ABERTA);
+        var correcoes = repository.findByUsuarioIdAndStatus(usuarioId, ABERTA);
 
         var normais = converterParaDuasCasasDecimais(correcoes
             .stream()
