@@ -104,8 +104,13 @@
         </div>
       </div>
       <br />
-      <br />
-      <div class="row" id="historico"></div>
+      <div class="card">
+        <div class="card-title">Históricos</div>
+        <br />
+        <div class="card-body"><div class="row" id="historico"></div></div>
+        <br />
+      </div>
+
       <br />
       <div class="col m3">
         <a class="btn btn-primary" href="/correcao-api/login.html" role="button"
@@ -362,7 +367,14 @@
                       <span class="sr-only"></span>
                     </div>
                     <h5 class="card-title">${historico.processoSeletivoDetalhe}</h5>
-                   <a href=historico.html?historico=${historico.processoSeletivo} /> <button type="button" class="btn btn-danger" onsubmit="historico.html/${historico.processoSeletivo}">Acessar</button>
+                   <div class="col m3">
+                   <a
+                      class="btn btn-danger"
+                      href="historico.html?historico=${historico.processoSeletivo}"
+                      role="button"
+                      >Acessar</a
+                    >
+                  </div>
                   </div>
                 </div>
               </div>
