@@ -44,6 +44,9 @@
                     class="form-control"
                     id="qtdNormal"
                     name="qtdNormal"
+                    min="0"
+                    max="100"
+                    value="0"
                   />
                 </div>
               </div>
@@ -56,6 +59,9 @@
                     class="form-control"
                     id="qtdTerceiraCorrecao"
                     name="qtdTerceiraCorrecao"
+                    min="0"
+                    max="100"
+                    value="0"
                   />
                 </div>
               </div>
@@ -68,6 +74,9 @@
                     class="form-control"
                     id="qtdAvaliacaoDesempenho"
                     name="qtdAvaliacaoDesempenho"
+                    min="0"
+                    max="100"
+                    value="0"
                   />
                 </div>
               </div>
@@ -147,7 +156,24 @@
       ) {
         object[key] = value;
       });
-      console.info(object);
+
+      if (isNaN(object.qtdAvaliacaoDesempenho)) {
+        object.qtdAvaliacaoDesempenho = 0;
+      } else {
+        object.qtdAvaliacaoDesempenho = Number(object.qtdAvaliacaoDesempenho);
+      }
+
+      if (isNaN(object.qtdNormal)) {
+        object.qtdNormal = 0;
+      } else {
+        object.qtdNormal = Number(object.qtdNormal);
+      }
+
+      if (isNaN(object.qtdTerceiraCorrecao)) {
+        object.qtdTerceiraCorrecao = 0;
+      } else {
+        object.qtdTerceiraCorrecao = Number(object.qtdTerceiraCorrecao);
+      }
 
       await axios
         .post(`${backEnd}/api/correcoes`, object, { headers })
