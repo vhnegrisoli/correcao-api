@@ -48,7 +48,7 @@ public class CorrecaoService {
 
     private void validarDadosCorrecao(CorrecaoRequest request, Integer usuarioId) {
         validarCorrecaoComData(request);
-        validarTotalMaiorQue100(request);
+        validarTotalMaiorQueLimitePermitido(request);
         validarDataJaExistente(request, usuarioId);
     }
 
@@ -59,7 +59,7 @@ public class CorrecaoService {
         }
     }
 
-    private void validarTotalMaiorQue100(CorrecaoRequest request) {
+    private void validarTotalMaiorQueLimitePermitido(CorrecaoRequest request) {
         var total = request.getQtdNormal() + request.getQtdTerceiraCorrecao() + request.getQtdAvaliacaoDesempenho();
         if (total > TOTAL_CORRECOES_POR_DIA) {
             throw new ValidacaoException("O total de correções por dia é 100.");
